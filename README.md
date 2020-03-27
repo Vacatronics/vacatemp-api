@@ -10,6 +10,5 @@ Para configuração e instalação, veja o tutorial a seguir:
 
 ## Dependências
 
-Python-Eve: 0.9.0
-
+Python-Eve: 1.1
 

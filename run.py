@@ -1,14 +1,5 @@
 from vacatempapi import *
 
-manager = TempSensorManager(None)
-manager.list_sensors()
-manager.start()
-
-while True:
-    try:
-        time.sleep(0.1)
-    except KeyboardInterrupt:
-        break
-
-manager.stop()
-manager.join()
+if __name__ == '__main__':
+    app = create_app()
+    app.run(host='127.0.0.1', port=5000)

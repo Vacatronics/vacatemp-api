@@ -24,7 +24,19 @@ class TempSensorManager(threading.Thread):
         '''Lista todos os sensores disponíveis no sistema.'''
         self.init()
         devices_dir = pathlib.Path('/sys/bus/w1/devices')
-        self.sensors = [TempSensor(s.name) for s in devices_dir.glob('**/28-*')]
+        self.sensors = []
+        for sensor in devices_dir.glob('**/28-*'):
+            # Verifica se sensores estão cadastrados no banco ou não
+            # E insere caso não estejam
+            sdb = self.db.sensors.find_one({'_id': sensor.name})
+            if not sdb:
+                self.db.sensors.insert_one({
+                    '_id': sensor.name, 
+                    '_created': datetime.now(), 
+                    '_updated': datetime.now()
+            })
+            self.sensors.append(TempSensor(sensor.name))
+
 
     def run(self):
         '''Rotina para ler os sensores a cada minuto.'''
@@ -37,8 +49,8 @@ class TempSensorManager(threading.Thread):
                     try:
                         if sensor.read_temp():
                             # Salva no banco
-                            self.db.insert_one({
-                                '_id': sensor._id, 
+                            self.db.temperatures.insert_one({
+                                'sensor': sensor._id, 
                                 'temperature': sensor.temperature,
                                 '_created': datetime.now(),
                                 '_updated': datetime.now()
