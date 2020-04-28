@@ -33,6 +33,7 @@ SETTINGS = {
     'X_ALLOW_CREDENTIALS': True,
     'HATEOAS': False,
     'TRANSPARENT_SCHEMA_RULES': True,
+    'PAGINATION_LIMIT': 100,
     'DATE_FORMAT': '%Y-%m-%d %H:%M:%S',
     'ITEM_METHODS': ['GET', 'PATCH', 'DELETE'],
     'RESOURCE_METHODS': ['GET']

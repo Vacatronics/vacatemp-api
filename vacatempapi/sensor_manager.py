@@ -12,7 +12,7 @@ class TempSensorManager(threading.Thread):
         super().__init__(*args, **kwargs)
         self.sensors = []
         self._is_running = False
-        self._period = 60
+        self._period = 1800
         self.db = db
 
     def init(self):
@@ -28,13 +28,14 @@ class TempSensorManager(threading.Thread):
         for sensor in devices_dir.glob('**/28-*'):
             # Verifica se sensores estão cadastrados no banco ou não
             # E insere caso não estejam
-            sdb = self.db.sensors.find_one({'_id': sensor.name})
-            if not sdb:
-                self.db.sensors.insert_one({
-                    '_id': sensor.name, 
-                    '_created': datetime.now(), 
-                    '_updated': datetime.now()
-            })
+            if self.db:
+                sdb = self.db.sensors.find_one({'_id': sensor.name})
+                if not sdb:
+                    self.db.sensors.insert_one({
+                        '_id': sensor.name, 
+                        '_created': datetime.now(), 
+                        '_updated': datetime.now()
+                })
             self.sensors.append(TempSensor(sensor.name))
 
 
@@ -47,7 +48,7 @@ class TempSensorManager(threading.Thread):
                 # Hora de ler 
                 for sensor in self.sensors:
                     try:
-                        if sensor.read_temp():
+                        if sensor.read_temp() and self.db:
                             # Salva no banco
                             self.db.temperatures.insert_one({
                                 'sensor': sensor._id, 
